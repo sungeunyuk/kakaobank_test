@@ -1,0 +1,131 @@
+/*
+
+미흡한 maven 실력
+
+java 산출물을 대신할 수 있는 강력한  sqoop 예시를 적어보았습니다.
+
+*/
+
+
+sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+--connect jdbc:mysql://bipa-cmsrv-t1001:3306/KAKAOBANK \
+--username root --password '*****' \
+--query "select * from KAKAOBANK.MENU_LOG where  log_tktm like '%20190301%'  and \$CONDITIONS" \
+--split-by menu_nm \
+--target-dir /bidw/bidev/tmp_yse_user_mtr4/ \
+--delete-target-dir --as-parquetfile
+
+
+
+
+
+>> 수행 결과
+
+
+[irteamsu@bipa-gateway-t1001 resource]$ sqoop import "-Dorg.apache.sqoop.splitter.allow_text_splitter=true" \
+> --connect jdbc:mysql://bipa-cmsrv-t1001:3306/KAKAOBANK \
+> --username root --password '*****' \
+> --query "select * from KAKAOBANK.MENU_LOG where  log_tktm like '%20190301%'  and \$CONDITIONS" \
+> --split-by menu_nm \
+> --target-dir /bidw/bidev/tmp_yse_user_mtr4/ \
+> --delete-target-dir --as-parquetfile
+Warning: /opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/bin/../lib/sqoop/../accumulo does not exist! Accumulo imports will fail.
+Please set $ACCUMULO_HOME to the root of your Accumulo installation.
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/slf4j-log4j12-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/cloudera/parcels/CDH-6.3.2-1.cdh6.3.2.p0.1605554/jars/log4j-slf4j-impl-2.8.2.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+20/09/21 21:36:42 INFO sqoop.Sqoop: Running Sqoop version: 1.4.7-cdh6.3.2
+20/09/21 21:36:42 WARN tool.BaseSqoopTool: Setting your password on the command-line is insecure. Consider using -P instead.
+20/09/21 21:36:42 INFO manager.MySQLManager: Preparing to use a MySQL streaming resultset.
+20/09/21 21:36:42 INFO tool.CodeGenTool: Beginning code generation
+Mon Sep 21 21:36:42 KST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+20/09/21 21:36:42 INFO manager.SqlManager: Executing SQL statement: select * from KAKAOBANK.MENU_LOG where  log_tktm like '%20190301%'  and  (1 = 0)
+20/09/21 21:36:42 INFO manager.SqlManager: Executing SQL statement: select * from KAKAOBANK.MENU_LOG where  log_tktm like '%20190301%'  and  (1 = 0)
+20/09/21 21:36:42 INFO manager.SqlManager: Executing SQL statement: select * from KAKAOBANK.MENU_LOG where  log_tktm like '%20190301%'  and  (1 = 0)
+20/09/21 21:36:42 INFO orm.CompilationManager: HADOOP_MAPRED_HOME is /opt/cloudera/parcels/CDH/lib/hadoop-mapreduce
+20/09/21 21:36:44 ERROR orm.CompilationManager: Could not rename /tmp/sqoop-irteamsu/compile/65b1fc1a765c31dc3e4beb190f893ff6/QueryResult.java to /home1/irteamsu/codingtest-p4/resource/./QueryResult.java. Error: Destination '/home1/irteamsu/codingtest-p4/resource/./QueryResult.java' already exists
+20/09/21 21:36:44 INFO orm.CompilationManager: Writing jar file: /tmp/sqoop-irteamsu/compile/65b1fc1a765c31dc3e4beb190f893ff6/QueryResult.jar
+20/09/21 21:36:44 INFO tool.ImportTool: Destination directory /bidw/bidev/tmp_yse_user_mtr4 deleted.
+20/09/21 21:36:44 INFO mapreduce.ImportJobBase: Beginning query import.
+20/09/21 21:36:44 INFO Configuration.deprecation: mapred.jar is deprecated. Instead, use mapreduce.job.jar
+Mon Sep 21 21:36:44 KST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+20/09/21 21:36:44 INFO manager.SqlManager: Executing SQL statement: select * from KAKAOBANK.MENU_LOG where  log_tktm like '%20190301%'  and  (1 = 0)
+20/09/21 21:36:44 INFO manager.SqlManager: Executing SQL statement: select * from KAKAOBANK.MENU_LOG where  log_tktm like '%20190301%'  and  (1 = 0)
+20/09/21 21:36:44 INFO manager.SqlManager: Executing SQL statement: select * from KAKAOBANK.MENU_LOG where  log_tktm like '%20190301%'  and  (1 = 0)
+20/09/21 21:36:45 INFO Configuration.deprecation: mapred.map.tasks is deprecated. Instead, use mapreduce.job.maps
+20/09/21 21:36:45 INFO client.RMProxy: Connecting to ResourceManager at bipa-hdpapp-t1001.svr.toastmaker.net/10.161.102.73:8032
+20/09/21 21:36:45 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /user/impala/.staging/job_1600422019600_0014
+Mon Sep 21 21:36:46 KST 2020 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+20/09/21 21:36:46 INFO db.DBInputFormat: Using read commited transaction isolation
+20/09/21 21:36:46 INFO db.DataDrivenDBInputFormat: BoundingValsQuery: SELECT MIN(menu_nm), MAX(menu_nm) FROM (select * from KAKAOBANK.MENU_LOG where  log_tktm like '%20190301%'  and  (1 = 1) ) AS t1
+20/09/21 21:36:46 WARN db.TextSplitter: Generating splits for a textual index column.
+20/09/21 21:36:46 WARN db.TextSplitter: If your database sorts in a case-insensitive order, this may result in a partial import or duplicate records.
+20/09/21 21:36:46 WARN db.TextSplitter: You are strongly encouraged to choose an integral split column.
+20/09/21 21:36:46 INFO mapreduce.JobSubmitter: number of splits:4
+20/09/21 21:36:46 INFO Configuration.deprecation: yarn.resourcemanager.system-metrics-publisher.enabled is deprecated. Instead, use yarn.system-metrics-publisher.enabled
+20/09/21 21:36:47 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1600422019600_0014
+20/09/21 21:36:47 INFO mapreduce.JobSubmitter: Executing with tokens: []
+20/09/21 21:36:47 INFO conf.Configuration: resource-types.xml not found
+20/09/21 21:36:47 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+20/09/21 21:36:47 INFO impl.YarnClientImpl: Submitted application application_1600422019600_0014
+20/09/21 21:36:47 INFO mapreduce.Job: The url to track the job: http://bipa-hdpapp-t1001.svr.toastmaker.net:8088/proxy/application_1600422019600_0014/
+20/09/21 21:36:47 INFO mapreduce.Job: Running job: job_1600422019600_0014
+20/09/21 21:36:53 INFO mapreduce.Job: Job job_1600422019600_0014 running in uber mode : false
+20/09/21 21:36:53 INFO mapreduce.Job:  map 0% reduce 0%
+20/09/21 21:36:59 INFO mapreduce.Job:  map 100% reduce 0%
+20/09/21 21:36:59 INFO mapreduce.Job: Job job_1600422019600_0014 completed successfully
+20/09/21 21:36:59 INFO mapreduce.Job: Counters: 33
+        File System Counters
+                FILE: Number of bytes read=0
+                FILE: Number of bytes written=983010
+                FILE: Number of read operations=0
+                FILE: Number of large read operations=0
+                FILE: Number of write operations=0
+                HDFS: Number of bytes read=530
+                HDFS: Number of bytes written=4696
+                HDFS: Number of read operations=24
+                HDFS: Number of large read operations=0
+                HDFS: Number of write operations=8
+                HDFS: Number of bytes read erasure-coded=0
+        Job Counters
+                Launched map tasks=4
+                Other local map tasks=4
+                Total time spent by all maps in occupied slots (ms)=25672
+                Total time spent by all reduces in occupied slots (ms)=0
+                Total time spent by all map tasks (ms)=12836
+                Total vcore-milliseconds taken by all map tasks=12836
+                Total megabyte-milliseconds taken by all map tasks=26288128
+        Map-Reduce Framework
+                Map input records=19
+                Map output records=19
+                Input split bytes=530
+                Spilled Records=0
+                Failed Shuffles=0
+                Merged Map outputs=0
+                GC time elapsed (ms)=498
+                CPU time spent (ms)=14430
+                Physical memory (bytes) snapshot=1819742208
+                Virtual memory (bytes) snapshot=14594949120
+                Total committed heap usage (bytes)=6593445888
+                Peak Map Physical memory (bytes)=466522112
+                Peak Map Virtual memory (bytes)=3666243584
+        File Input Format Counters
+                Bytes Read=0
+        File Output Format Counters
+                Bytes Written=4696
+20/09/21 21:36:59 INFO mapreduce.ImportJobBase: Transferred 4.5859 KB in 14.1893 seconds (330.9533 bytes/sec)
+20/09/21 21:36:59 INFO mapreduce.ImportJobBase: Retrieved 19 records.
+
+
+[irteamsu@bipa-gateway-t1001 resource]$ hadoop fs -ls /bidw/bidev/tmp_yse_user_mtr4
+Found 7 items
+-rw-r--r--   3 impala supergroup          0 2020-09-21 21:36 /bidw/bidev/tmp_yse_user_mtr4/_SUCCESS
+-rw-r--r--   3 impala supergroup        754 2020-09-21 21:36 /bidw/bidev/tmp_yse_user_mtr4/_common_metadata
+-rw-r--r--   3 impala supergroup       1512 2020-09-21 21:36 /bidw/bidev/tmp_yse_user_mtr4/_metadata
+-rw-r--r--   3 impala supergroup       1504 2020-09-21 21:36 /bidw/bidev/tmp_yse_user_mtr4/part-m-00000.parquet
+-rw-r--r--   3 impala supergroup        754 2020-09-21 21:36 /bidw/bidev/tmp_yse_user_mtr4/part-m-00001.parquet
+-rw-r--r--   3 impala supergroup        754 2020-09-21 21:36 /bidw/bidev/tmp_yse_user_mtr4/part-m-00002.parquet
+-rw-r--r--   3 impala supergroup       1684 2020-09-21 21:36 /bidw/bidev/tmp_yse_user_mtr4/part-m-00003.parquet
+[irteamsu@bipa-gateway-t1001 resource]$
