@@ -1,0 +1,14 @@
+{
+   "작성자": {
+         "Name": "육성은",
+         "작업내용": "MENU_LOG 이관 mysql to hdfs"
+    },
+    "work": [
+         {
+              "job_name": "MENU_LOG_ETL_JOB",              
+              "concurrency": 3,
+              "source_table": "KAKAOBANK.MENU_LOG",
+              "target_table": "KAKAOBANK.MENU_LOG",              
+         }
+    ]
+}
