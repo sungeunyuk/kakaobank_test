@@ -1,8 +1,0 @@
--- 메이븐 프로젝트 dependencies 처리
-mvn dependency:copy-dependencies
-
--- 프로젝트 빌드 
-mvn package
-
--- 프로젝트 실행
-java -cp target/codingtest-p4-1.0-SNAPSHOT.jar:target/dependency/* net.oboki.kakaobank.recruit.Test
