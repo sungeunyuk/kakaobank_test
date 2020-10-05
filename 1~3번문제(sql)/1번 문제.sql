@@ -32,7 +32,7 @@ from
 	select a.* , row_number() over(partition by dayofweek order by cnt desc, menu_nm asc) as 'rank_menu'
 	from (
 	select -- Log_tktm ,
-	case WEEKDAY(Log_tktm)
+	case WEEKDAY(Log_tktm) -- 날짜 요일 추출 함수
 		when '0' then '월요일'
 		when '1' then '화요일'
 		when '2' then '수요일'
@@ -42,9 +42,11 @@ from
 		when '6' then '일요일'
 		end as dayofweek ,
 		menu_nm ,
-		 count(*) cnt
+		 count(*) cnt -- 요일별 메뉴별 건수
 	from KAKAOBANK.MENU_LOG
 	where MENU_NM not in ('logout' , 'login')
+	-- 조건 로그인/로그아웃 제외
+	-- where 절 칼럼 인덱싱
 	group by 1,2
 	) a
 )a
