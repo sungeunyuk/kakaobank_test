@@ -62,7 +62,7 @@ from (
 		   cnt ,
 		   truncate( (cnt / sum(cnt) over (partition by menu_nm )  ) * 100 ,2)   as cnt_total
            -- 타겟 메뉴별 컨수 합 계 비율 구하기.
-	 from (
+	from (
 			select MENU_NM ,
 				   before_menu  ,
 				   count(*) cnt
