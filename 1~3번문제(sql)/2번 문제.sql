@@ -20,7 +20,7 @@ CREATE INDEX IDX_MENU_LOG_MENU_NAME ON KAKAOBANK.MENU_LOG (MENU_NM);
 -- EXPLAIN FORMAT=JSON
 
 
-EXPLAIN FORMAT=JSON
+-- EXPLAIN FORMAT=JSON
 select  b.menu_nm as '메뉴명',
 		b.before_menu as '이전 메뉴명',
         b.cnt as '접근 건수',
@@ -46,6 +46,51 @@ on a.MENU_NM = b.menu_nm
 where b.before_menu is not null
 order by b.menu_nm asc , b.cnt desc , b.before_menu asc
 ;
+
+
+
+--- 쿼리 수정
+-- menu_log 테이블 2번 read 하지 않고 처리
+
+select menu_nm as '메뉴명' ,
+	   before_menu as '이전메뉴명' ,
+       cnt as '접근건수' ,
+       cnt_total as '비율(%)'
+from (
+	select menu_nm ,
+		   before_menu ,
+		   cnt ,
+		   truncate( (cnt / sum(cnt) over (partition by menu_nm )  ) * 100 ,2)   as cnt_total
+           -- 타겟 메뉴별 컨수 합 계 비율 구하기.
+	 from (
+			select MENU_NM ,
+				   before_menu  ,
+				   count(*) cnt
+			from (
+				select a.* ,
+                       lag(MENU_NM) over (partition by usr_no order by log_tktm) before_menu
+                       -- 이용자 기준으로 이전 메뉴 트레킹
+				from KAKAOBANK.MENU_LOG a
+				) a
+			group by 1,2
+		   ) a
+	) a
+where before_menu is not null -- 이전 메뉴명이 없을 경우 최종 아웃풋 에서 제외.
+order by menu_nm asc , cnt desc , before_menu asc
+;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*
