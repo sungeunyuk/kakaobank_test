@@ -97,6 +97,91 @@ order by a.usr_no asc
 
 
 
+-- 쿼리 수정
+
+select a.usr_no  as '사용자 번호',
+		case when substr(rsdt_no , length(join_dt) +1 + 6, 1) = '1' then '남'
+             when substr(rsdt_no , length(join_dt) +1 + 6, 1) = '2' then '여'
+             when substr(rsdt_no , length(join_dt) +1 + 6, 1) = '3' then '남'
+             when substr(rsdt_no , length(join_dt) +1 + 6, 1) = '4' then '여'
+             else '-'
+             end as '성별',
+        ifnull (floor(( cast(20200626 as unsigned) -
+			   cast(concat( case when substr(rsdt_no , length(join_dt) +1 + 6, 1) in ('1','2')
+								 then '19' else '20' end , substr(rsdt_no , length(join_dt) +1 , 6 ) ) as unsigned ) ) / 10000 ) , '-') as '나이' ,
+
+        ifnull(b.loc_nm ,'-') as '지역명',
+        ifnull(b.before_loc_nm ,'-')as '이전 지역명' ,
+        ifnull(substr(mcco_nm , length(join_dt) +1, length(mcco_nm)) ,'-')as '이동통신사명' ,
+		ifnull(substr(join_dt , 1,8) ,'-')as '가입일' ,
+        ifnull(c.top_menu ,'-')as '최빈메뉴',
+        ifnull(c.lst_menu ,'-')as '최근메뉴'
+from (
+-- 메인이 되는 테이블 20190305022554
+	select usr_no ,
+		   min(LOG_TKTM) as join_dt  ,
+		   max(if( length(rsdt_no) > 0 , concat(log_tktm , rsdt_no) , null )) as rsdt_no ,
+		   max(if( length(mcco_nm) > 0 , concat(log_tktm , mcco_nm) , null )) as mcco_nm
+	from KAKAOBANK.USR_INFO_CHG_LOG
+	-- where usr_no = 001
+	group by 1
+) a
+left outer join
+(
+-- 이전 지역 구하기위해
+select usr_no ,
+	   loc_nm ,
+       lag(loc_nm) over(partition by usr_no order by LOG_TKTM) as before_loc_nm ,
+       row_number() over ( partition by usr_no order by Log_tktm desc ) as rn
+from KAKAOBANK.USR_INFO_CHG_LOG
+where loc_nm is not null and loc_nm <> ''
+) b
+on a.usr_no = b.usr_no
+and b.rn = 1
+left outer join
+(
+-- 최근 메뉴 최빈 메뉴 추출
+select usr_no , menu_nm as top_menu , substr(tt_menu_nm ,15 , 200) as lst_menu
+from (
+	select usr_no , menu_nm , cnt , tt_menu_nm , row_number() over (partition by usr_no order by cnt desc) rn
+	from (
+		select usr_no , menu_nm , count(*) as cnt , max(tt_menu_nm)  tt_menu_nm
+		from (
+
+			select usr_no , MENU_NM ,   max(concat(log_tktm , menu_nm)) over(partition by usr_no)  as tt_menu_nm
+			from KAKAOBANK.MENU_LOG a
+			where menu_nm not in ('login' , 'logout')
+
+		) a
+		group by 1,2
+	) a
+) a
+where rn = 1
+) c
+on a.usr_no = c.usr_no
+order by a.usr_no asc
+;
+
+
+
+-- 최근 메뉴 / 최빈 메뉴 쿼리 수정
+-- left outer join 과다 사용 (테이블 데이터가 커지면 문제 발생)
+
+-- 따라서, 이용자 테이블을 따로 dw 1차 dw 2차 테이블 등으로 분리 설계하여 처리
+-- 이용자 이력 --> 이용자 마스터 테이블 (누적)
+--  이용자_마스터 테이블 설계 (중간 작업으로 처리)
+-- usr_no
+-- 가입일(로그 최초 시간)
+-- 최종 접속일( 로그 최종 마지막 시간)
+-- 최종 지역 ( 이용자 이력 테이블에 지역 변경사항 등록되면 업데이트 반영)
+-- 이전 지역 ( 업데이트 반영 시점에 최종 -> 이전지역 으로 데이터 업데이트 반영)
+-- 나이 / 만나이 계산
+-- 이동 통신사
+
+
+
+
+
 /*
 실행계획
 id, select_type, table, partitions, type, possible_keys, key, key_len, ref, rows, filtered, Extra
