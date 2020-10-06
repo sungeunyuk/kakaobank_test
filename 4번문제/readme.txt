@@ -1,3 +1,9 @@
+mvn archetype:generate \
+-DgroupId=net.oboki.kakaobank \
+-DartifactId=codingtest-p4 \
+-Dpackage=net.oboki.kakaobank.recruit
+
+
 mvn dependency:copy-dependencies
 
 mvn package
