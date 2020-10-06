@@ -1,0 +1,49 @@
+        
+        
+        // insert 할 테이블 스키마 구조 만들기 
+        
+        String schema = "{\"namespace\": \"org.myorganization.mynamespace\"," //Not used in Parquet, can put anything
+                + "\"type\": \"record\"," 
+                + "\"name\": \"myrecordname\"," 
+                + "\"fields\": ["
+                + " {\"name\": \"myInteger\", \"type\": \"int\"}," //Required field
+                + " {\"name\": \"myString\",  \"type\": \"int\"},"
+                + " {\"name\": \"myDecimal\", \"type\": \"int\"}"
+                + " ]}";
+
+
+        Schema.Parser parser2 = new Schema.Parser().setValidate(true);
+        Schema avroSchema = parser2.parse(schema);
+
+        GenericData.Record record = new GenericData.Record(avroSchema);
+        
+        // 코드 테스트를 위해 하드코딩 하였지만, 먼저 제출한 과제물의 
+        // 테이블 데이터를 읽어서 레코드에 put 
+        record.put("myInteger", 1);
+        record.put("myString", "string value 1");
+        record.put("myDecimal", "hahah");
+
+ 
+        try {
+           Configuration conf = new Configuration();
+           conf.set("fs.s3a.access.key", "ACCESSKEY");
+           conf.set("fs.s3a.secret.key", "SECRETKEY");
+           // hdfs 경로 
+           Path path = new Path("/home1/irteamsu/codingtest-p4/resource/data.parquet");
+
+           try (ParquetWriter<GenericData.Record> writer = AvroParquetWriter.<GenericData.Record>builder(path)
+                   .withSchema(avroSchema)
+                   .withCompressionCodec(CompressionCodecName.SNAPPY)
+                   .withConf(conf)
+                   .withPageSize(4 * 1024 * 1024)
+                   .withRowGroupSize(16 * 1024 * 1024)
+                   .build()
+                )
+        {
+               writer.write(record);
+        }
+        }catch(java.io.IOException e){
+      System.out.println(String.format("Error writing parquet file %s", e.getMessage()));
+      e.printStackTrace();
+    }
+
