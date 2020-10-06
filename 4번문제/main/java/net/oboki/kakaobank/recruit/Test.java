@@ -149,35 +149,7 @@ public class Test {
     
 
 
-  // mysql 로 읽어온 하루치 메뉴 로그를 
-  // 방법 1. hive - parquet table 에 insert query 로 구축 하여 데이터 입력 
-  // 방법 2. mysql 읽어온 데이터를 avro-parquet  파일로 떨구고 해당 파일을 
-  //         hdfs 디렉토리에 hdfs write. 
-  //
-  //         방법 2 는 실패 하였고, 방법 1 테스트중 시간이 부족하여 완성하지 못했습니다. 
 
-
-
-
-
-//            String driverName = "org.apache.hive.jdbc.HiveDriver";
-//
-  //              try { 
-    //                    Class.forName(driverName);
-      //          } catch (ClassNotFoundException ex) {
-        //              ex.printStackTrace();
-          //      }
- //
-   //             System.out.println("before trying to connect");
-     //           Connection con = DriverManager.getConnection("jdbc:hive2://bipa-hdpapp-t1002:10002/", "hive", "");
-       //         System.out.println("connected");
- //
-   //             Statement stmt = con.createStatement();
-     //           stmt.executeQuery("show tables");
-       //         //
-         //       con.close();
-
-// program end 
 
 System.out.println("프로그램 exit ");
 
