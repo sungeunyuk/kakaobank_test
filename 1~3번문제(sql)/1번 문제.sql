@@ -17,37 +17,36 @@ CREATE INDEX IDX_MENU_LOG_MENU_NAME ON KAKAOBANK.MENU_LOG (MENU_NM);
 
 
 select  rank_menu as '구분',
-
-    ifnull(group_concat( if (dayofweek='월요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '월요일' ,
-    ifnull(group_concat( if (dayofweek='화요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '화요일' ,
-    ifnull(group_concat( if (dayofweek='수요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '수요일' ,
-    ifnull(group_concat( if (dayofweek='목요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '목요일' ,
-    ifnull(group_concat( if (dayofweek='금요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '금요일' ,
-    ifnull(group_concat( if (dayofweek='토요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '토요일' ,
-    ifnull(group_concat( if (dayofweek='일요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '일요일'
+        ifnull(group_concat( if (dayofweek='월요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '월요일' ,
+        ifnull(group_concat( if (dayofweek='화요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '화요일' ,
+        ifnull(group_concat( if (dayofweek='수요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '수요일' ,
+        ifnull(group_concat( if (dayofweek='목요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '목요일' ,
+        ifnull(group_concat( if (dayofweek='금요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '금요일' ,
+        ifnull(group_concat( if (dayofweek='토요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '토요일' ,
+        ifnull(group_concat( if (dayofweek='일요일' , concat(menu_nm , concat(' (',convert(cnt,char)) ,'건)')  , null) ) , '-') as '일요일'
 
 from
 (
-	select a.* , row_number() over(partition by dayofweek order by cnt desc, menu_nm asc) as 'rank_menu'
-	from (
-	select -- Log_tktm ,
-	case WEEKDAY(Log_tktm) -- 날짜 요일 추출 함수
-		when '0' then '월요일'
-		when '1' then '화요일'
-		when '2' then '수요일'
-		when '3' then '목요일'
-		when '4' then '금요일'
-		when '5' then '토요일'
-		when '6' then '일요일'
-		end as dayofweek ,
-		menu_nm ,
-		 count(*) cnt -- 요일별 메뉴별 건수
-	from KAKAOBANK.MENU_LOG
-	where MENU_NM not in ('logout' , 'login')
-	-- 조건 로그인/로그아웃 제외
-	-- where 절 칼럼 인덱싱
-	group by 1,2
-	) a
+    select a.* , row_number() over(partition by dayofweek order by cnt desc, menu_nm asc) as 'rank_menu'
+    from (
+        select -- Log_tktm ,
+            case WEEKDAY(Log_tktm) -- 날짜 요일 추출 함수
+            when '0' then '월요일'
+            when '1' then '화요일'
+            when '2' then '수요일'
+            when '3' then '목요일'
+            when '4' then '금요일'
+            when '5' then '토요일'
+            when '6' then '일요일'
+            end as dayofweek ,
+            menu_nm ,
+            count(*) cnt -- 요일별 메뉴별 건수
+        from KAKAOBANK.MENU_LOG
+        where MENU_NM not in ('logout' , 'login')
+        -- 조건 로그인/로그아웃 제외
+        -- where 절 칼럼 인덱싱
+        group by 1,2
+    ) a
 )a
 where rank_menu <= 10  -- top 10 menu only
 group by rank_menu
