@@ -50,7 +50,7 @@ order by b.menu_nm asc , b.cnt desc , b.before_menu asc
 
 
 --- 쿼리 수정
--- menu_log 테이블 2번 read 하지 않고 처리
+-- menu_log 테이블 2번 read 하지 않고 처리하도록 변경
 
 select menu_nm as '메뉴명' ,
 	   before_menu as '이전메뉴명' ,
@@ -62,6 +62,7 @@ from (
 		   cnt ,
 		   truncate( (cnt / sum(cnt) over (partition by menu_nm )  ) * 100 ,2)   as cnt_total
            -- 타겟 메뉴별 컨수 합 계 비율 구하기.
+           -- 소수 2자리 까지만 버림.
 	from (
 			select MENU_NM ,
 				   before_menu  ,
@@ -76,7 +77,9 @@ from (
 		   ) a
 	) a
 where before_menu is not null -- 이전 메뉴명이 없을 경우 최종 아웃풋 에서 제외.
-order by menu_nm asc , cnt desc , before_menu asc
+order by menu_nm asc ,
+         cnt desc ,
+         before_menu asc
 ;
 
 
